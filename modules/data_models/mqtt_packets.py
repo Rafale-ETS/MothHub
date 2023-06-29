@@ -126,13 +126,14 @@ class MQTTwindPkt(MQTTPacket):
     def __init__(self,
         timestamp: int = DEFAULT_TIMESTAMP,
         sender_name: str  = DEFAULT_SENDER_NAME, 
-        wind_spd: float = (0.0),
-        wind_dir: int = (0) 
+        wind_spd: float = 0.0,
+        wind_dir: int = 0
     ):
-
         super().__init__(timestamp, PacketTypes.wind, sender_name)
-        self.wind_speed=wind_spd
-        self.wind_direction =wind_dir
+        self.data = {
+            "wind_spd": wind_spd,
+            "wind_dir": wind_dir
+        }
 
 class MQTTStatusPkt(MQTTPacket):
     def __init__(self, 
@@ -151,3 +152,4 @@ class MQTTStatusPkt(MQTTPacket):
             "charge_level": batt_pct,
             "msg": msg
         }
+

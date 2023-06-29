@@ -5,10 +5,11 @@ import logging as log
 import signal
 import sys
 import time
+import traceback
 from mongita import MongitaClientDisk
 from mongita.database import Database
 from mongita.collection import Collection
-from bson import ObjectId
+from bson import ObjectId, InvalidBSON
 
 import paho.mqtt.client as mqtt
 
@@ -39,7 +40,13 @@ class DatabaseService():
 
     def insert_data(self, coll_name: str, data: dict):
         coll: Collection = eval(f"self._db.{coll_name}")
-        coll.insert_one(data)
+        try:
+            log.debug(f"{coll_name}: {data}")
+            coll.insert_one(data)
+        except InvalidBSON as ibe:
+            log.warning(f"Invalid Data: coll:{coll_name}, data:{data}, skipping")
+            log.warning(f"{traceback.print_exc()}")
+    
     
     # from_date has to be further in time than to_date. Ex: from 25/02/2022 to 30/02/2022
     # Defaults to data up to this instant if only from is provided.
@@ -73,7 +80,7 @@ class MonginaDatabaseModule(MqttSubModule):
         payload = json.loads(msg.payload)
         self.db_srv.insert_data(msg.topic, payload)
 
-    def exit_gracefully(self):
+    def exit_gracefully(self, _1, _2):
         self.db_srv._db_client.close()
         sys.exit(0)
 

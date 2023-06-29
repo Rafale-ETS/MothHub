@@ -8,7 +8,7 @@ from modules.data_models.mqtt_packets import MQTTPositionPkt, MQTTSpeedPkt, Pack
 from .mqtt_utils import MqttTopics
 from .mqtt_modules import MqttPubModule
 
-ZED_F9P_SERIAL_PORT = "/dev/ttyS0"
+ZED_F9P_SERIAL_PORT = "/dev/ttyACM0"
 ZED_F9P_SERIAL_BAUD = 38400
 ZED_F9P_I2C_ADDR = 0x84
 
@@ -28,15 +28,17 @@ NMEA_MESSAGE_GLL = "GLL"
 
 class ZED_F9P_Hat_GPS(MqttPubModule):
     def __init__(self, name: str, mqtt_broker: str = "localhost", mqtt_broker_port=1883, serial_port=ZED_F9P_SERIAL_PORT, baud=ZED_F9P_SERIAL_BAUD) -> None:
-        super().__init__([MqttTopics.POSITION, MqttTopics.SPEED], mqtt_broker, mqtt_broker_port)
+        super().__init__([MqttTopics.POSITION, MqttTopics.SPEED, MqttTopics.STATUS], mqtt_broker, mqtt_broker_port)
 
+        log.info(f"Starting GPS with {name}@{serial_port}[{baud}], {mqtt_broker}:{mqtt_broker_port}")
         self._name = name
         self.serial_con = serial.Serial(serial_port, baud, timeout=5)
         self.nmea_stream = NMEAReader(self.serial_con)
 
     def run(self): # This is an infinite loop pooling the gps
         pos_data = MQTTPositionPkt(pkt_type=PacketTypes.gps_pos, sender_name=self._name)
-        
+        log.info("Started GPS run")
+
         while True:
             try:
                 parsed_msg: NMEAMessage = None
@@ -45,8 +47,11 @@ class ZED_F9P_Hat_GPS(MqttPubModule):
                 log.debug(f"{parsed_msg}")
 
                 dt: datetime.datetime = datetime.datetime.utcnow()
-                    
-                if(parsed_msg.msgID == NMEA_MESSAGE_RMC):
+
+                if not parsed_msg:
+                    pass
+
+                elif(parsed_msg.msgID == NMEA_MESSAGE_RMC):
                     pos_data = MQTTPositionPkt(pkt_type=PacketTypes.gps_pos, sender_name=self._name)
                     # RMC message is the first relevant message we get per data burst, we can use it to send the timestamp for the whole burst.
                     pos_data.time = int(dt.timestamp()) # time as a unix timestamp

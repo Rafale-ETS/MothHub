@@ -12,7 +12,7 @@ class MqttTopics:
     DIRECTION = "direction" # (Heading) GPS
     ORIENTATION = "orientation" # IMU
     POSITION = "position" # GPS
-    WIND = "wind"
+    WIND = "wind_data"
    
     STRENGHT = "strength" # Strength/tension gages
     STATUS = "status" # errors and reporting
