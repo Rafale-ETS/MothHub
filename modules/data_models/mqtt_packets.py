@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import json
 from typing import Any
-from calypso_anemometer.core import CalypsoDeviceApi, Settings
-from calypso_anemometer.model import CalypsoReading
+#from calypso_anemometer.core import CalypsoDeviceApi, Settings
+#from calypso_anemometer.model import CalypsoReading
 
 
 # Default init values "defines"

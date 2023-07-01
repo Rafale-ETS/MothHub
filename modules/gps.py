@@ -10,7 +10,7 @@ from .mqtt_modules import MqttPubModule
 
 ZED_F9P_SERIAL_PORT = "/dev/ttyACM0"
 ZED_F9P_SERIAL_BAUD = 38400
-ZED_F9P_I2C_ADDR = 0x84
+#ZED_F9P_I2C_ADDR = 0x84
 
 # Available message types: 
 # ['$GNRMC', '$GNVTG', '$GNGGA', '$GNGSA', '$GPGSV', '$GLGSV', '$GAGSV', '$GBGSV', '$GNGLL']

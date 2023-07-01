@@ -4,6 +4,7 @@ import json
 import logging as log
 import signal
 import sys
+import os
 import time
 import traceback
 from mongita import MongitaClientDisk
@@ -39,14 +40,31 @@ class DatabaseService():
         self._db: Database = eval(f"self._db_client.{db_name}")
 
     def insert_data(self, coll_name: str, data: dict):
-        coll: Collection = eval(f"self._db.{coll_name}")
-        try:
-            log.debug(f"{coll_name}: {data}")
-            coll.insert_one(data)
-        except InvalidBSON as ibe:
-            log.warning(f"Invalid Data: coll:{coll_name}, data:{data}, skipping")
-            log.warning(f"{traceback.print_exc()}")
+ #       coll: Collection = eval(f"self._db.{coll_name}")
+ #       try:
+ #           log.debug(f"{coll_name}: {data}")
+ #           coll.insert_one(data)
+ #       except InvalidBSON as ibe:
+ #           log.warning("probleme archivage:{coll_name}, data:{data}, passage au suivant")
     
+ # Check if the file exists
+         if not os.path.isfile('/home/pi/MothHub/data1.json'):
+        # Create the file and write the first entry
+             with open('/home/pi/MothHub/data1.json', 'w+') as f:
+                 json.dump([data], f, indent=4)
+         else:
+        # Read the existing data
+             with open('/home/pi/MothHub/data1.json', 'r') as f:
+                 file_data = json.load(f)
+                 if not isinstance(file_data, list):
+                     file_data =[file_data]
+        
+        # Append the new data
+             file_data.append(data)
+        
+        # Write the updated data back to the file
+             with open('/home/pi/MothHub/data1.json', 'w+') as f:
+                json.dump(file_data, f, indent=4)   
     
     # from_date has to be further in time than to_date. Ex: from 25/02/2022 to 30/02/2022
     # Defaults to data up to this instant if only from is provided.

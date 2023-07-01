@@ -31,7 +31,6 @@ class BNO085IMU(MqttPubModule):
         self.bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 
         #TODO: Calibrate?
-    
     def run(self):
         while 1:
             timestamp = int(datetime.datetime.utcnow().timestamp())
