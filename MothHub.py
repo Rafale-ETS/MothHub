@@ -4,6 +4,8 @@ from paho.mqtt import client as mqtt_client
 from time import sleep
 import argparse
 import asyncio
+import sys
+import os
 
 from modules.gps import GPS
 from modules.imu import IMU
@@ -50,39 +52,46 @@ def main():
     else:
         log.basicConfig(level=log.INFO)
 
-    log.info("Checking for MQTT Broker...")
+    #log.info("Checking for MQTT Broker...")
     # TODO: fix
     #if not isMQTTBrokerUp(args.broker, args.port):
     #    log.warning(f"No MQTT broker found at {args.broker}:{args.port}, exiting.")
     #    exit(1)
 
-    log.info("Broker found, Starting HUB...")    
-    gps = GPS("HUB GPS")
-    imu = IMU("HUB IMU")
- #   anemo = Anemometer("Calypso Mini")
-    local_DB = Local_DB("rafale3_local_archive") #Autostarts
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    gps_thread = Thread(target=gps.run)
-    imu_thread = Thread(target=imu.run)
+    log.info("Broker found, Starting HUB...")  
+    user_input = 1
+    while True:
+        
+        gps = GPS("HUB GPS")
+        imu = IMU("HUB IMU")
+        #anemo = Anemometer("Calypso Mini")
+        local_DB = Local_DB("rafale3_local_archive") #Autostarts
+        print("database demarrer")
+        gps_thread = Thread(target=gps.run)
+        imu_thread = Thread(target=imu.run)
 
-  #  anemo_thread = Thread(target=asyncio.run, args=(anemo.run(),))
+        #anemo_thread = Thread(target=asyncio.run, args=(anemo.run(),))
 
-    gps_thread.start()
-    imu_thread.start()
-#    anemo_thread.start()
+        gps_thread.start()
+        imu_thread.start()
+        #sleep(5)
+        user_input = input("Ecrire stop pour arreter:") 
+        #print(user_input)
+        if user_input == 'stop':
+            #local_DB._handle_termination()
+            #local_DB.exit_gracefully()
+            #print("should exit")
+            os._exit(0)
+        #anemo_thread.start()
 
-    log.info("Threads started. Waiting end...")
+        #log.info("Threads started. Waiting end...")
 
-    gps_thread.join()
-    imu_thread.join()
-   # anemo_thread.join()
-
-    log.warning("Threads ended, exiting!")
+        #gps_thread.join()
+        #imu_thread.join()
+        # anemo_thread.join()
 
     
-#    anemo.exit_gracefully()
-    local_DB.exit_gracefully()
-    exit(0)
+
 
 if __name__ == "__main__":
     main()
