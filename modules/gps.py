@@ -8,7 +8,7 @@ from modules.data_models.mqtt_packets import MQTTPositionPkt, MQTTSpeedPkt, Pack
 from .mqtt_utils import MqttTopics
 from .mqtt_modules import MqttPubModule
 
-ZED_F9P_SERIAL_PORT = "/dev/ttyS0"
+ZED_F9P_SERIAL_PORT = "/dev/ttyACM0"
 ZED_F9P_SERIAL_BAUD = 38400
 ZED_F9P_I2C_ADDR = 0x84
 
