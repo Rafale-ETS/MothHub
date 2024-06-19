@@ -2,7 +2,7 @@ import json
 import logging as log
 from threading import Lock
 import time
-
+#Gestion de la communication LoRa du Pi actuellement non operationnel
 import serial
 import paho.mqtt.client as mqtt
 

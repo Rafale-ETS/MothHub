@@ -1,4 +1,5 @@
 
+
 import datetime
 import json
 import logging as log
@@ -44,7 +45,7 @@ class DatabaseService():
     def insert_data(self, coll_name: str, data: dict):
         coll: Collection = eval(f"self._db.{coll_name}")
         coll.insert_one(data)
-    
+
     # from_date has to be further in time than to_date. Ex: from 25/02/2022 to 30/02/2022
     # Defaults to data up to this instant if only from is provided.
     def obtain_data_from_date(self, coll_name: str, from_date: datetime.datetime, to_date: datetime.datetime = datetime.datetime.now()):
@@ -56,7 +57,6 @@ class DatabaseService():
                 "$lte": to_id
             }
         }
-
         coll: Collection = eval(f"self._db.{coll_name}")
         return list(coll.find(time_range_filter))
 
@@ -68,7 +68,7 @@ class MonginaDatabaseModule(MqttSubModule):
         super().__init__([MqttTopics.ALL], mqtt_broker, mqtt_broker_port)
         self.db_srv = DatabaseService("rafale3")
 
-        # Setup gracefull exit on kill        
+        # Setup gracefull exit on kill
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
