@@ -1,14 +1,14 @@
-
-import datetime
 import json
 import logging as log
 import signal
 import sys
+import os
 import time
+import traceback
 from mongita import MongitaClientDisk
 from mongita.database import Database
 from mongita.collection import Collection
-from bson import ObjectId
+from bson import ObjectId, InvalidBSON
 
 import paho.mqtt.client as mqtt
 
@@ -18,12 +18,12 @@ from modules.mqtt_utils import MqttTopics
 from .mqtt_modules import MqttSubModule
 
 # Handle races as object of data points
-# Be able to load only race metadata (start/end time, etc) without loading data points
+# Be able to load only race metadata (start/end time, etc) without loading d$
 
 # Database structure:
 # - [database] rafale3
 #   - [collection] races
-#     - [document] race 1 #TODO: define the race data structure and when we save it.
+#     - [document] race 1 #TODO: define the race data structure and when we $
 #   - [collection] speed
 #     - [document] mqtt speed packet (one document per packet recieved)
 #   - [collection] position
@@ -38,9 +38,33 @@ class DatabaseService():
         self._db: Database = eval(f"self._db_client.{db_name}")
 
     def insert_data(self, coll_name: str, data: dict):
-        coll: Collection = eval(f"self._db.{coll_name}")
-        coll.insert_one(data)
-    
+ #       coll: Collection = eval(f"self._db.{coll_name}")
+ #       try:
+ #           log.debug(f"{coll_name}: {data}")
+ #           coll.insert_one(data)
+ #       except InvalidBSON as ibe:
+ #           log.warning("probleme archivage:{coll_name}, data:{data}, passa$
+
+        if not os.path.isfile('./home/pi/Mothub/data1.json'):
+        # Create the file and write the first entry
+             with open('./home/pi/Mothub/data1.json', 'w') as f:
+                 json.dump([data], f, indent=4)
+        else:
+            # Read the existing data
+            with open('./home/pi/Mothub/data1.json', 'r') as f:
+                 file_data = json.load(f)
+                 if not isinstance(file_data, list):
+                     file_data =[file_data]
+
+        # Append the new data
+            file_data.append(data)
+
+        # Write the updated data back to the file
+            with open('./home/pi/Mothub/data1.json', 'w') as f:
+                json.dump(file_data, f, indent=4)
+
+    # from_date has to be further in time than to_date. Ex: from 25/02/2022 $
+    # Defaults to data up to this instant if only from is provided.
     # from_date has to be further in time than to_date. Ex: from 25/02/2022 to 30/02/2022
     # Defaults to data up to this instant if only from is provided.
     def obtain_data_from_date(self, coll_name: str, from_date: datetime.datetime, to_date: datetime.datetime = datetime.datetime.now()):
@@ -53,6 +77,9 @@ class DatabaseService():
             }
         }
 
+
+
+
         coll: Collection = eval(f"self._db.{coll_name}")
         return list(coll.find(time_range_filter))
 
@@ -61,7 +88,7 @@ class MonginaDatabaseModule(MqttSubModule):
         super().__init__([MqttTopics.ALL], mqtt_broker, mqtt_broker_port)
         self.db_srv = DatabaseService(name)
 
-        # Setup gracefull exit on kill        
+        # Setup gracefull exit on kill
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
@@ -73,7 +100,7 @@ class MonginaDatabaseModule(MqttSubModule):
         payload = json.loads(msg.payload)
         self.db_srv.insert_data(msg.topic, payload)
 
-    def exit_gracefully(self):
+    def exit_gracefully(self, _1, _2):
         self.db_srv._db_client.close()
         sys.exit(0)
 
