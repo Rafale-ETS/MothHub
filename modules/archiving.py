@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from collections import deque
-
+#archivage externe d'un ancien (Christo) actuellement non fonctionnel
 import logging as log
 import paho.mqtt.client as mqtt
 
@@ -42,7 +42,7 @@ def get_current_race(range_sec: int = DEFAULT_CURRENT_RACE_RANGE, force_new = Fa
         resp = requests.get(API(END_RACES))
         if resp.status_code == 200:
             data = resp.json()
-            
+
             curr_race = {"last_mod": 0} # Faking a race dict
             max_tmstmp = (datetime.utcnow() - timedelta(seconds=range_sec)).timestamp()
 
@@ -50,12 +50,12 @@ def get_current_race(range_sec: int = DEFAULT_CURRENT_RACE_RANGE, force_new = Fa
                 #TODO: Check for proper timestamp
                 if (race["last_mod"] > max_tmstmp) and (curr_race["last_mod"] < race["last_mod"]):
                     curr_race = race
-            
+
             if curr_race["last_mod"] > 0:
                 return curr_race["key"]
-    
+
     # else either we want a new race, or haven't found a current one
-    now = datetime.utcnow().timestamp() 
+    now = datetime.utcnow().timestamp()
     data = {
         "timestamp": now,
         "last_mod": now,
@@ -72,7 +72,7 @@ class ArchivingMQTTModule(MqttSubModule):
         self.packet_queue: 'deque(ArchivePacket)' = deque()
         self.current_packet: ArchivePacket = ArchivePacket()
 
-        # Setup gracefull exit on kill        
+        # Setup gracefull exit on kill
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
@@ -97,7 +97,6 @@ class ArchivingMQTTModule(MqttSubModule):
 #log.basicConfig(level=log.INFO)
 log.basicConfig(level=log.DEBUG)
 archiving = ArchivingMQTTModule()
-
 #TODO: make a better way to sleep and let the rest work.
 while True:
     time.sleep(0.1)

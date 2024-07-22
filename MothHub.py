@@ -12,6 +12,7 @@ from modules.imu import IMU
 from modules.local_archiving import Database as Local_DB
 from modules.mqtt_utils import DEFAULT_BROKER, DEFAULT_PORT
 from modules.anemometer2 import Anemometer
+from modules.anemometer2 import Anemometer
 
 def isMQTTBrokerUp(broker: str = DEFAULT_BROKER, port: int = DEFAULT_PORT):
     broker_up = False
@@ -39,12 +40,13 @@ def main():
 
     argParser = argparse.ArgumentParser()
     argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
+    argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
     argParser.add_argument('-p', '--port', type=int, help="The MQTT broker's port. (int)", default=DEFAULT_PORT, required=False)
     argParser.add_argument('-v', '--verbose', help="Print debug outputs", required=False, action='store_true')
     argParser.add_argument('-s', '--silent', help="Print only warn and errors", required=False, action='store_true')
 
     args = argParser.parse_args()
-    
+
     if args.verbose:
         log.basicConfig(level=log.DEBUG)
     elif args.silent:
@@ -95,3 +97,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -1,15 +1,16 @@
-
-import datetime
 import json
 import logging as log
 import signal
 import sys
 import os
+import os
 import time
+import traceback
 import traceback
 from mongita import MongitaClientDisk
 from mongita.database import Database
 from mongita.collection import Collection
+from bson import ObjectId, InvalidBSON
 from bson import ObjectId, InvalidBSON
 
 import paho.mqtt.client as mqtt
@@ -21,12 +22,12 @@ from .mqtt_modules import MqttSubModule
 
 
 # Handle races as object of data points
-# Be able to load only race metadata (start/end time, etc) without loading data points
+# Be able to load only race metadata (start/end time, etc) without loading d$
 
 # Database structure:
 # - [database] rafale3
 #   - [collection] races
-#     - [document] race 1 #TODO: define the race data structure and when we save it.
+#     - [document] race 1 #TODO: define the race data structure and when we $
 #   - [collection] speed
 #     - [document] mqtt speed packet (one document per packet recieved)
 #   - [collection] position
@@ -92,6 +93,9 @@ class DatabaseService():
             }
         }
 
+
+
+
         coll: Collection = eval(f"self._db.{coll_name}")
         return list(coll.find(time_range_filter))
 
@@ -100,7 +104,7 @@ class MonginaDatabaseModule(MqttSubModule):
         super().__init__([MqttTopics.ALL], mqtt_broker, mqtt_broker_port)
         self.db_srv = DatabaseService(name)
 
-        # Setup gracefull exit on kill        
+        # Setup gracefull exit on kill
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 

@@ -3,6 +3,8 @@ import asyncio
 import datetime
 import logging as log
 #import signal
+import logging as log
+#import signal
 
 from modules.data_models.mqtt_packets import MQTTwindPkt
 from .mqtt_utils import MqttTopics
@@ -20,7 +22,7 @@ def retry_policy(info: RetryInfo) -> RetryPolicyStrategy:
 @retry(retry_policy)
 async def calypso_subscribe_demo():
     def process_reading(reading:CalypsoReading):
-       
+
         #reading.dump()
         
         dt = datetime.datetime.utcnow()
@@ -43,8 +45,9 @@ async def calypso_subscribe_demo():
 
         log.info("connected creating mqtt client")
         client = MqttPubModule([MqttTopics.WIND])
-        
+
         await calypso.subscribe_reading(process_reading)
+        log.info("subscribe waiting forever")
         log.info("subscribe waiting forever")
         await wait_forever()
         #await calypso.discover()
@@ -53,4 +56,7 @@ async def calypso_subscribe_demo():
 
 if __name__ == "__main__":  # pragma: nocover
     log.basicConfig(level=log.DEBUG)
+    log.basicConfig(level=log.DEBUG)
     asyncio.run(calypso_subscribe_demo())
+
+

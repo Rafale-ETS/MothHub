@@ -34,8 +34,9 @@ class BNO085IMU(MqttPubModule):
     def run(self):
         while 1:
             timestamp = int(datetime.datetime.utcnow().timestamp())
-            orientation = MQTTOrientationPkt(timestamp, self._name, self.bno.acceleration, 
+            orientation = MQTTOrientationPkt(timestamp, self._name, self.bno.acceleration,
                                             self.bno.linear_acceleration, self.bno.quaternion, self.bno.gyro)
+
 
             log.debug(str(orientation))
             self.publish(MqttTopics.ORIENTATION, str(orientation))
