@@ -38,21 +38,21 @@ def isMQTTBrokerUp(broker: str = DEFAULT_BROKER, port: int = DEFAULT_PORT):
 
 def main():
 
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
-    argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
-    argParser.add_argument('-p', '--port', type=int, help="The MQTT broker's port. (int)", default=DEFAULT_PORT, required=False)
-    argParser.add_argument('-v', '--verbose', help="Print debug outputs", required=False, action='store_true')
-    argParser.add_argument('-s', '--silent', help="Print only warn and errors", required=False, action='store_true')
+    #argParser = argparse.ArgumentParser()
+    #argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
+    #argParser.add_argument('-b', '--broker', type=str, help="The MQTT broker's IP address (string)", default=DEFAULT_BROKER, required=False)
+    #argParser.add_argument('-p', '--port', type=int, help="The MQTT broker's port. (int)", default=DEFAULT_PORT, required=False)
+    #argParser.add_argument('-v', '--verbose', help="Print debug outputs", required=False, action='store_true')
+    #argParser.add_argument('-s', '--silent', help="Print only warn and errors", required=False, action='store_true')
 
-    args = argParser.parse_args()
+    #args = argParser.parse_args()
 
-    if args.verbose:
-        log.basicConfig(level=log.DEBUG)
-    elif args.silent:
-        log.basicConfig(level=log.WARNING)
-    else:
-        log.basicConfig(level=log.INFO)
+    #if args.verbose:
+    #    log.basicConfig(level=log.DEBUG)
+    #elif args.silent:
+    #    log.basicConfig(level=log.WARNING)
+    #else:
+    #   log.basicConfig(level=log.INFO)
 
     #log.info("Checking for MQTT Broker...")
     # TODO: fix
